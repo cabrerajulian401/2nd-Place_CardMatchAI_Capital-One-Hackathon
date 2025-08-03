@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000"; // Updated to use port 3001
+const BASE_URL = "https://twond-place-creditmatchai-capital-one.onrender.com"; // Updated to use port 3001
 
 export async function startConversation() {
   try {
