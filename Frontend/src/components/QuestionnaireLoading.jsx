@@ -1,79 +1,103 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { startConversation } from '../api/agent';
 
-export default function LoadingAnimation({ onComplete, waitForSignal = false }) {
+export default function QuestionnaireLoading() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [canFinish, setCanFinish] = useState(false);
-  const [hasReachedEnd, setHasReachedEnd] = useState(false);
+  const [sessionData, setSessionData] = useState(null);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const steps = [
-    "AI Agents Searching Database...",
-    "Analyzing Credit Profiles...",
-    "Matching Card Features...",
-    "Generating Recommendations...",
-    "Search & Analysis Complete!"
+    "Initializing AI System...",
+    "Loading Credit Card Database...",
+    "Preparing Questionnaire...",
+    "Setting Up Conversation...",
+    "Ready to Start!"
   ];
 
   useEffect(() => {
-    // Only reset state if we haven't reached the end yet
-    if (!hasReachedEnd) {
-      setCurrentStep(0);
-      setIsComplete(false);
-      setCanFinish(false);
-    }
-    
-    const timer = setInterval(() => {
-      setCurrentStep((prev) => {
-        if (prev < steps.length - 1) {
-          return prev + 1;
-        } else {
-          clearInterval(timer);
-          setIsComplete(true);
-          setHasReachedEnd(true);
-          
-          // If we need to wait for a signal, don't call onComplete yet
-          if (waitForSignal && !canFinish) {
-            console.log(" Loading animation complete, waiting for API signal...");
-            return prev;
-          }
-          
-          // Otherwise, proceed normally
-          setTimeout(() => {
-            onComplete();
-          }, 1500);
-          return prev;
-        }
-      });
-    }, 1200);
+    const initializeQuestionnaire = async () => {
+      try {
+        // Step 1: Initialize AI System
+        setCurrentStep(0);
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Step 2: Loading Credit Card Database
+        setCurrentStep(1);
+        await new Promise(resolve => setTimeout(resolve, 600));
+        
+        // Step 3: Preparing Questionnaire
+        setCurrentStep(2);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Step 4: Setting Up Conversation
+        setCurrentStep(3);
+        console.log("Starting conversation with backend...");
+        const data = await startConversation();
+        setSessionData(data);
+        console.log("Conversation started successfully:", data);
+        
+        // Step 5: Ready to Start
+        setCurrentStep(4);
+        await new Promise(resolve => setTimeout(resolve, 400));
+        
+        setIsComplete(true);
+        
+        // Navigate to questionnaire with session data
+        setTimeout(() => {
+          navigate("/questionnaire", { 
+            state: { 
+              preInitializedSession: data,
+              sessionId: data.session_id,
+              initialQuestion: data.initial_question
+            }
+          });
+        }, 800);
+        
+      } catch (error) {
+        console.error(" Failed to initialize questionnaire:", error);
+        setError(error.message);
+      }
+    };
 
-    return () => clearInterval(timer);
-  }, [onComplete, waitForSignal, canFinish, hasReachedEnd]);
+    initializeQuestionnaire();
+  }, [navigate]);
 
-  // Listen for the signal that API calls are complete
-  useEffect(() => {
-    if (isComplete && canFinish) {
-                  console.log("API signal received, completing loading animation...");
-      setTimeout(() => {
-        onComplete();
-      }, 1500);
-    }
-  }, [isComplete, canFinish, onComplete]);
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-lg">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-light text-white mb-2">
+              CardMatch <span className="font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-300 bg-clip-text text-transparent">AI</span>
+            </h1>
+            <p className="text-gray-400 font-light">Something went wrong</p>
+          </div>
 
-  // Function to signal that API calls are complete
-  const signalComplete = () => {
-    console.log("Signaling API completion to loading animation...");
-    setCanFinish(true);
-  };
-
-  // Expose the signal function to parent component
-  useEffect(() => {
-    if (window.signalLoadingComplete) {
-      window.signalLoadingComplete = signalComplete;
-    } else {
-      window.signalLoadingComplete = signalComplete;
-    }
-  }, []);
+          <div className="bg-gray-900/50 backdrop-blur-sm border border-red-800 rounded-3xl shadow-2xl p-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-900/50 border border-red-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-white mb-2">Connection Error</h2>
+              <p className="text-gray-400 mb-6">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition duration-200"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 flex items-center justify-center p-4">
@@ -81,9 +105,9 @@ export default function LoadingAnimation({ onComplete, waitForSignal = false }) 
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-light text-white mb-2">
-            Credit Card <span className="font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-300 bg-clip-text text-transparent">Finder</span>
+            CardMatch <span className="font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-300 bg-clip-text text-transparent">AI</span>
           </h1>
-          <p className="text-gray-400 font-light">Processing your profile...</p>
+          <p className="text-gray-400 font-light">Loading up questionnaire...</p>
         </div>
 
         {/* Main Card */}
@@ -92,7 +116,7 @@ export default function LoadingAnimation({ onComplete, waitForSignal = false }) 
           {/* Progress Bar */}
           <div className="mb-8">
             <div className="flex justify-between text-sm text-gray-400 mb-2">
-              <span>Processing</span>
+              <span>Initializing</span>
               <span>{currentStep + 1} / {steps.length}</span>
             </div>
             <div className="w-full bg-gray-800 rounded-full h-2">
@@ -107,7 +131,7 @@ export default function LoadingAnimation({ onComplete, waitForSignal = false }) 
 
           {/* Loading Content */}
           <div className="text-center">
-            {/* AI Agents Animation */}
+            {/* AI System Animation */}
             <div className="mb-6">
               <div className="w-20 h-20 bg-blue-900/30 border border-blue-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <motion.div
@@ -245,7 +269,7 @@ export default function LoadingAnimation({ onComplete, waitForSignal = false }) 
         {/* Footer */}
         <div className="text-center mt-6">
           <p className="text-sm text-gray-500 font-light">
-            Please wait while we analyze your profile...
+            Preparing your personalized questionnaire...
           </p>
         </div>
       </div>

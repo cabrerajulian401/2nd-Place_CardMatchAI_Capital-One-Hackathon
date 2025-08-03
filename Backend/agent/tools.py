@@ -38,29 +38,29 @@ class SubAgentCardAnalysisTool(BaseTool):
     def _run(self, user_profile: Dict[str, Any]) -> List[Dict[str, Any]]:
         try:
             logger.info(f"🚀 {self._agent_id.upper()} starting analysis...")
-            print(f"🔍 DEBUG: {self._agent_id.upper()} - Starting analysis")
+            print(f" DEBUG: {self._agent_id.upper()} - Starting analysis")
             
             # Get all cards from database
             all_cards = self._db_manager.get_all_cards_for_llm()
             logger.info(f"📊 {self._agent_id.upper()} loaded {len(all_cards)} total cards from database")
-            print(f"🔍 DEBUG: {self._agent_id.upper()} - Loaded {len(all_cards)} cards from database")
+            print(f" DEBUG: {self._agent_id.upper()} - Loaded {len(all_cards)} cards from database")
             
             # Split cards based on agent ID (0, 1, or 2) - 33% each
             if self._agent_id == "agent_0":
                 cards_to_analyze = all_cards[:len(all_cards)//3]  # First third
                 logger.info(f"🔪 {self._agent_id.upper()} analyzing first third: {len(cards_to_analyze)} cards")
-                print(f"🔍 DEBUG: {self._agent_id.upper()} - Analyzing first third: {len(cards_to_analyze)} cards")
+                print(f" DEBUG: {self._agent_id.upper()} - Analyzing first third: {len(cards_to_analyze)} cards")
             elif self._agent_id == "agent_1":
                 cards_to_analyze = all_cards[len(all_cards)//3:2*len(all_cards)//3]  # Second third
                 logger.info(f"🔪 {self._agent_id.upper()} analyzing second third: {len(cards_to_analyze)} cards")
-                print(f"🔍 DEBUG: {self._agent_id.upper()} - Analyzing second third: {len(cards_to_analyze)} cards")
+                print(f" DEBUG: {self._agent_id.upper()} - Analyzing second third: {len(cards_to_analyze)} cards")
             else:  # agent_2
                 cards_to_analyze = all_cards[2*len(all_cards)//3:]  # Third third
                 logger.info(f"🔪 {self._agent_id.upper()} analyzing third third: {len(cards_to_analyze)} cards")
-                print(f"🔍 DEBUG: {self._agent_id.upper()} - Analyzing third third: {len(cards_to_analyze)} cards")
+                print(f" DEBUG: {self._agent_id.upper()} - Analyzing third third: {len(cards_to_analyze)} cards")
             
-            print(f"🔍 {self._agent_id.upper()} ANALYZING {len(cards_to_analyze)} cards...")
-            print(f"🔍 DEBUG: {self._agent_id.upper()} - Card names in this batch:")
+            print(f" {self._agent_id.upper()} ANALYZING {len(cards_to_analyze)} cards...")
+            print(f" DEBUG: {self._agent_id.upper()} - Card names in this batch:")
             for i, card in enumerate(cards_to_analyze[:5]):  # Show first 5
                 print(f"  {i+1}. {card.get('Card name', 'Unknown')}")
             
@@ -80,11 +80,11 @@ class SubAgentCardAnalysisTool(BaseTool):
                 card_data_for_llm.append(card_info)
             
             logger.info(f"📋 {self._agent_id.upper()} prepared {len(card_data_for_llm)} cards for analysis")
-            print(f"🔍 DEBUG: {self._agent_id.upper()} - Prepared {len(card_data_for_llm)} cards for LLM")
+            print(f" DEBUG: {self._agent_id.upper()} - Prepared {len(card_data_for_llm)} cards for LLM")
             
             # Check if user is a student
             is_student = user_profile.get('credit_situation', '').lower().find('student') != -1
-            print(f"🔍 DEBUG: {self._agent_id.upper()} - User is student: {is_student}")
+            print(f" DEBUG: {self._agent_id.upper()} - User is student: {is_student}")
             
             # Create simplified sub-agent analysis prompt with student handling
             student_instruction = ""
@@ -110,7 +110,7 @@ CARDS: {json.dumps(card_data_for_llm, indent=1)}
 TASK: Select ~{len(card_data_for_llm)//2} best cards. Return JSON array with "name" and "reasoning" fields."""
 
             logger.info(f"📝 {self._agent_id.upper()} created analysis prompt ({len(sub_agent_prompt)} characters)")
-            print(f"🔍 DEBUG: {self._agent_id.upper()} - Created prompt with {len(sub_agent_prompt)} characters")
+            print(f" DEBUG: {self._agent_id.upper()} - Created prompt with {len(sub_agent_prompt)} characters")
             
             # Return the cards for this agent to analyze
             result = {
@@ -122,12 +122,12 @@ TASK: Select ~{len(card_data_for_llm)//2} best cards. Return JSON array with "na
             }
             
             logger.info(f"✅ {self._agent_id.upper()} completed data preparation")
-            print(f"🔍 DEBUG: {self._agent_id.upper()} - Completed data preparation")
+            print(f" DEBUG: {self._agent_id.upper()} - Completed data preparation")
             return result
             
         except Exception as e:
             logger.error(f"❌ Error in {self._agent_id} analysis: {e}")
-            print(f"🔍 DEBUG: {self._agent_id.upper()} - ERROR: {e}")
+            print(f" DEBUG: {self._agent_id.upper()} - ERROR: {e}")
             return {"agent_id": self._agent_id, "cards": [], "user_profile": user_profile}
 
 class FinalCardSelectionTool(BaseTool):
@@ -149,7 +149,7 @@ class FinalCardSelectionTool(BaseTool):
             all_cards = self._db_manager.get_all_cards_for_llm()
             logger.info(f"📊 Final agent loaded {len(all_cards)} total cards")
             
-            print(f"🎯 FINAL AGENT: Analyzing {len(all_cards)} cards for final selection...")
+            print(f" FINAL AGENT: Analyzing {len(all_cards)} cards for final selection...")
             
             # Create comprehensive card data for final LLM analysis (simplified)
             card_data_for_llm = []

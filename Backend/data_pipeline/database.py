@@ -131,9 +131,9 @@ class JSONDatabaseManager:
     def get_all_cards_for_llm(self) -> List[Dict[str, Any]]:
         """Get all cards in a format optimized for LLM analysis"""
         all_cards = self.get_all_cards()
-        print(f"📊 DEBUG: Total cards loaded from database: {len(all_cards)}")
-        print(f"🔍 DEBUG: First 3 card names: {[card.get('Card name', 'Unknown') for card in all_cards[:3]]}")
-        print(f"📊 DEBUG: Last 3 card names: {[card.get('Card name', 'Unknown') for card in all_cards[-3:]]}")
+        print(f"DEBUG: Total cards loaded from database: {len(all_cards)}")
+        print(f"DEBUG: First 3 card names: {[card.get('Card name', 'Unknown') for card in all_cards[:3]]}")
+        print(f"DEBUG: Last 3 card names: {[card.get('Card name', 'Unknown') for card in all_cards[-3:]]}")
         logger.info(f"📊 Total cards available for LLM analysis: {len(all_cards)}")
         return all_cards
     

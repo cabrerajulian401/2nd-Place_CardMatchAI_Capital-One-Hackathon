@@ -10,22 +10,22 @@ from pathlib import Path
 
 def run_command(command, description):
     """Run a command and handle errors"""
-    print(f"\n🔄 {description}...")
+    print(f"\n {description}...")
     try:
         result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
-        print(f"✅ {description} completed successfully")
+        print(f" {description} completed successfully")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ {description} failed: {e}")
+        print(f" {description} failed: {e}")
         print(f"Error output: {e.stderr}")
         return False
 
 def check_python_version():
     """Check if Python version is compatible"""
     if sys.version_info < (3, 8):
-        print("❌ Python 3.8 or higher is required")
+        print(" Python 3.8 or higher is required")
         return False
-    print(f"✅ Python {sys.version_info.major}.{sys.version_info.minor} detected")
+    print(f" Python {sys.version_info.major}.{sys.version_info.minor} detected")
     return True
 
 def install_dependencies():
@@ -47,7 +47,7 @@ def create_directories():
     for directory in directories:
         Path(directory).mkdir(exist_ok=True)
     
-    print("✅ Directories created")
+    print(" Directories created")
 
 def create_env_file():
     """Create .env file from template"""
@@ -76,14 +76,14 @@ MAX_RETRIES=3
     if not env_path.exists():
         with open(env_path, "w") as f:
             f.write(env_template)
-        print("✅ Created .env file from template")
+        print(" Created .env file from template")
         print("⚠️  Please edit .env file with your API keys")
     else:
-        print("✅ .env file already exists")
+        print(" .env file already exists")
 
 def test_imports():
     """Test that all imports work correctly"""
-    print("\n🔄 Testing imports...")
+    print("\n Testing imports...")
     
     try:
         # Test core imports
@@ -93,17 +93,17 @@ def test_imports():
         import uvicorn
         import chromadb
         import tavily
-        print("✅ Core dependencies imported successfully")
+        print(" Core dependencies imported successfully")
         
         # Test our modules
         from data_pipeline.database import DatabaseManager
         from agent.nodes import State, QuestionAskerNode
         from agent.tools import create_tools
-        print("✅ Custom modules imported successfully")
+        print(" Custom modules imported successfully")
         
         return True
     except ImportError as e:
-        print(f"❌ Import test failed: {e}")
+        print(f" Import test failed: {e}")
         return False
 
 def run_data_pipeline():
@@ -115,7 +115,7 @@ def run_data_pipeline():
 
 def main():
     """Main setup function"""
-    print("🚀 Setting up Credit Card Recommendation System")
+    print(" Setting up Credit Card Recommendation System")
     print("=" * 50)
     
     # Check Python version
@@ -127,12 +127,12 @@ def main():
     
     # Install dependencies
     if not install_dependencies():
-        print("❌ Failed to install dependencies")
+        print(" Failed to install dependencies")
         sys.exit(1)
     
     # Test imports
     if not test_imports():
-        print("❌ Import test failed")
+        print(" Import test failed")
         sys.exit(1)
     
     # Create environment file
@@ -143,8 +143,8 @@ def main():
         print("⚠️  Data pipeline failed, but system can still run with sample data")
     
     print("\n" + "=" * 50)
-    print("✅ Setup completed successfully!")
-    print("\n📋 Next steps:")
+    print(" Setup completed successfully!")
+    print("\n Next steps:")
     print("1. Edit .env file with your API keys")
     print("2. Run: python api_server.py")
     print("3. Open frontend/index.html in your browser")

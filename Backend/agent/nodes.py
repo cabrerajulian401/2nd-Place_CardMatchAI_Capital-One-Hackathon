@@ -208,7 +208,7 @@ class FinalAnalysisNode:
         
         try:
             logger.info("🚀 STARTING PARALLEL ANALYSIS...")
-            print(f"🚀 STARTING PARALLEL ANALYSIS...")
+            print(f"STARTING PARALLEL ANALYSIS...")
             
             # Get sub-agents
             sub_agent_0 = self.tools.get("sub_agent_0")
@@ -224,7 +224,7 @@ class FinalAnalysisNode:
             
             # Run sub-agents in parallel with LLM analysis
             logger.info("🔄 Running sub-agents in parallel with LLM analysis...")
-            print(f"🔄 Running sub-agents in parallel with LLM analysis...")
+            print(f"Running sub-agents in parallel with LLM analysis...")
             
             # Use ThreadPoolExecutor for parallel execution
             with ThreadPoolExecutor(max_workers=3) as executor:
@@ -243,9 +243,9 @@ class FinalAnalysisNode:
             logger.info(f"✅ Sub-agent 0 selected {len(result_0.get('selected_cards', []))} cards")
             logger.info(f"✅ Sub-agent 1 selected {len(result_1.get('selected_cards', []))} cards")
             logger.info(f"✅ Sub-agent 2 selected {len(result_2.get('selected_cards', []))} cards")
-            print(f"✅ Sub-agent 0 selected {len(result_0.get('selected_cards', []))} cards")
-            print(f"✅ Sub-agent 1 selected {len(result_1.get('selected_cards', []))} cards")
-            print(f"✅ Sub-agent 2 selected {len(result_2.get('selected_cards', []))} cards")
+            print(f"Sub-agent 0 selected {len(result_0.get('selected_cards', []))} cards")
+            print(f"Sub-agent 1 selected {len(result_1.get('selected_cards', []))} cards")
+            print(f"Sub-agent 2 selected {len(result_2.get('selected_cards', []))} cards")
             
             # Combine selected cards from all three sub-agents
             combined_cards = []
@@ -254,7 +254,7 @@ class FinalAnalysisNode:
             combined_cards.extend(result_2.get("selected_cards", []))
             
             logger.info(f"📊 Combined {len(combined_cards)} selected cards from all three sub-agents")
-            print(f"📊 Combined {len(combined_cards)} selected cards from all three sub-agents")
+            print(f"Combined {len(combined_cards)} selected cards from all three sub-agents")
             
             # Use final agent to select best 3 cards from the combined selection
             logger.info("🎯 Starting final agent analysis...")
@@ -316,7 +316,7 @@ class FinalAnalysisNode:
         """Run LLM analysis for a sub-agent to reduce card selection by 50%"""
         try:
             logger.info(f"🤖 Starting sub-agent LLM analysis...")
-            print(f"🔍 DEBUG: Starting sub-agent LLM analysis...")
+            print(f" DEBUG: Starting sub-agent LLM analysis...")
             
             # Get sub-agent data
             sub_agent_data = sub_agent._run(user_profile)
@@ -325,8 +325,8 @@ class FinalAnalysisNode:
             agent_id = sub_agent_data.get("agent_id", "unknown")
             
             logger.info(f"📊 {agent_id.upper()} analyzing {len(cards_to_analyze)} cards")
-            print(f"🔍 DEBUG: {agent_id.upper()} - Analyzing {len(cards_to_analyze)} cards")
-            print(f"🔍 DEBUG: {agent_id.upper()} - First 3 cards to analyze:")
+            print(f" DEBUG: {agent_id.upper()} - Analyzing {len(cards_to_analyze)} cards")
+            print(f" DEBUG: {agent_id.upper()} - First 3 cards to analyze:")
             for i, card in enumerate(cards_to_analyze[:3]):
                 print(f"  {i+1}. {card.get('name', 'Unknown')}")
             
@@ -334,7 +334,7 @@ class FinalAnalysisNode:
             
             # Check if user is a student
             is_student = user_profile.get('credit_situation', '').lower().find('student') != -1
-            print(f"🔍 DEBUG: {agent_id.upper()} - User is student: {is_student}")
+            print(f" DEBUG: {agent_id.upper()} - User is student: {is_student}")
             
             # Create student-specific instructions for sub-agents
             student_instruction = ""
@@ -363,7 +363,7 @@ Example format:
 ]"""
 
             logger.info(f"📝 {agent_id.upper()} created LLM prompt ({len(prompt)} characters)")
-            print(f"🔍 DEBUG: {agent_id.upper()} - Created LLM prompt with {len(prompt)} characters")
+            print(f" DEBUG: {agent_id.upper()} - Created LLM prompt with {len(prompt)} characters")
 
             # Call LLM for sub-agent analysis
             messages = [
@@ -372,11 +372,11 @@ Example format:
             ]
             
             logger.info(f"🔄 {agent_id.upper()} calling LLM...")
-            print(f"🔍 DEBUG: {agent_id.upper()} - Calling LLM...")
+            print(f" DEBUG: {agent_id.upper()} - Calling LLM...")
             response = self.llm.invoke(messages)
             logger.info(f"✅ {agent_id.upper()} LLM response received ({len(response.content)} characters)")
-            print(f"🔍 DEBUG: {agent_id.upper()} - LLM response received ({len(response.content)} characters)")
-            print(f"🔍 DEBUG: {agent_id.upper()} - LLM response preview: {response.content[:200]}...")
+            print(f" DEBUG: {agent_id.upper()} - LLM response received ({len(response.content)} characters)")
+            print(f" DEBUG: {agent_id.upper()} - LLM response preview: {response.content[:200]}...")
             
             # Parse the response to extract selected cards
             try:
@@ -385,29 +385,29 @@ Example format:
                 selected_cards = []
                 
                 logger.info(f"🔍 {agent_id.upper()} parsing LLM response...")
-                print(f"🔍 DEBUG: {agent_id.upper()} - Parsing LLM response...")
-                print(f"🔍 DEBUG: {agent_id.upper()} - LLM returned {len(selected_cards_data)} card selections")
+                print(f" DEBUG: {agent_id.upper()} - Parsing LLM response...")
+                print(f" DEBUG: {agent_id.upper()} - LLM returned {len(selected_cards_data)} card selections")
                 
                 for i, card_data in enumerate(selected_cards_data):
                     card_name = card_data.get("name", "")
-                    print(f"🔍 DEBUG: {agent_id.upper()} - LLM selected card {i+1}: '{card_name}'")
+                    print(f" DEBUG: {agent_id.upper()} - LLM selected card {i+1}: '{card_name}'")
                     
                     # Find the full card data by name
                     found_card = None
                     for card in cards_to_analyze:
                         if card.get("name") == card_name:
                             found_card = card
-                            print(f"🔍 DEBUG: {agent_id.upper()} - Found matching card: '{card_name}'")
+                            print(f" DEBUG: {agent_id.upper()} - Found matching card: '{card_name}'")
                             break
                     
                     if found_card:
                         selected_cards.append(found_card)
                     else:
-                        print(f"🔍 DEBUG: {agent_id.upper()} - WARNING: No match found for LLM card: '{card_name}'")
+                        print(f" DEBUG: {agent_id.upper()} - WARNING: No match found for LLM card: '{card_name}'")
                 
                 logger.info(f"✅ {agent_id.upper()} selected {len(selected_cards)} cards from LLM response")
-                print(f"✅ {agent_id.upper()} selected {len(selected_cards)} cards")
-                print(f"🔍 DEBUG: {agent_id.upper()} - Final selected cards:")
+                print(f" {agent_id.upper()} selected {len(selected_cards)} cards")
+                print(f" DEBUG: {agent_id.upper()} - Final selected cards:")
                 for i, card in enumerate(selected_cards):
                     print(f"  {i+1}. {card.get('name', 'Unknown')}")
                 
@@ -420,8 +420,8 @@ Example format:
                 
             except json.JSONDecodeError:
                 logger.warning(f"❌ {agent_id.upper()} LLM response parsing failed, using fallback")
-                print(f"❌ {agent_id.upper()} LLM response parsing failed, using fallback")
-                print(f"🔍 DEBUG: {agent_id.upper()} - Raw LLM response: {response.content}")
+                print(f" {agent_id.upper()} LLM response parsing failed, using fallback")
+                print(f" DEBUG: {agent_id.upper()} - Raw LLM response: {response.content}")
                 # Fallback: return first 50% of cards
                 fallback_cards = cards_to_analyze[:len(cards_to_analyze)//2]
                 return {
@@ -433,7 +433,7 @@ Example format:
                 
         except Exception as e:
             logger.error(f"❌ {agent_id.upper()} LLM analysis failed: {e}")
-            print(f"❌ {agent_id.upper()} LLM analysis failed: {e}")
+            print(f" {agent_id.upper()} LLM analysis failed: {e}")
             # Fallback: return first 50% of cards
             fallback_cards = cards_to_analyze[:len(cards_to_analyze)//2] if 'cards_to_analyze' in locals() else []
             return {
@@ -448,18 +448,18 @@ Example format:
         """Generate a comprehensive recommendation using LLM analysis of all available cards"""
         
         logger.info("🤖 Starting final LLM recommendation generation...")
-        print(f"🔍 DEBUG: Starting final LLM recommendation generation...")
-        print(f"🔍 DEBUG: Received {len(all_cards)} cards for final analysis")
+        print(f" DEBUG: Starting final LLM recommendation generation...")
+        print(f" DEBUG: Received {len(all_cards)} cards for final analysis")
         
         # Create hybrid profile summary
         hybrid_profile = self._create_hybrid_profile(user_profile)
         logger.info("📋 Created hybrid profile summary")
-        print(f"🔍 DEBUG: Created hybrid profile: {hybrid_profile}")
+        print(f" DEBUG: Created hybrid profile: {hybrid_profile}")
         
         # Prepare comprehensive card data for LLM analysis
         card_data_summary = []
-        print(f"🔍 DEBUG: Preparing card data for LLM...")
-        print(f"🔍 DEBUG: First card structure: {all_cards[0] if all_cards else 'No cards'}")
+        print(f" DEBUG: Preparing card data for LLM...")
+        print(f" DEBUG: First card structure: {all_cards[0] if all_cards else 'No cards'}")
         
         for i, card in enumerate(all_cards):
             # FIX: Use the correct field names that match the database
@@ -478,14 +478,14 @@ Example format:
             }
             card_data_summary.append(card_summary)
             if i < 3:  # Show first 3 cards
-                print(f"🔍 DEBUG: Card {i+1}: {card_summary['name']} by {card_summary['issuer']}")
+                print(f" DEBUG: Card {i+1}: {card_summary['name']} by {card_summary['issuer']}")
         
         logger.info(f"📋 Prepared {len(card_data_summary)} cards for final analysis")
-        print(f"🔍 DEBUG: Prepared {len(card_data_summary)} cards for final LLM analysis")
+        print(f" DEBUG: Prepared {len(card_data_summary)} cards for final LLM analysis")
         
         # Check if user is a student
         is_student = user_profile.get('credit_situation', '').lower().find('student') != -1
-        print(f"🔍 DEBUG: User is student: {is_student}")
+        print(f" DEBUG: User is student: {is_student}")
         
         # Create student-specific instructions
         student_instruction = ""
@@ -539,8 +539,8 @@ Return the response in this exact format:
 3. **Card Name**
    [Same format as above]"""
 
-        print(f"🔍 DEBUG: Created final LLM prompt with {len(prompt)} characters")
-        print(f"🔍 DEBUG: Prompt preview: {prompt[:500]}...")
+        print(f" DEBUG: Created final LLM prompt with {len(prompt)} characters")
+        print(f" DEBUG: Prompt preview: {prompt[:500]}...")
 
         try:
             logger.info(f"🤖 Attempting LLM analysis with {len(all_cards)} cards...")
@@ -551,16 +551,16 @@ Return the response in this exact format:
             ]
             
             logger.info("🔄 Calling final LLM...")
-            print(f"🔍 DEBUG: Calling final LLM...")
+            print(f" DEBUG: Calling final LLM...")
             response = self.llm.invoke(messages)
             logger.info(f"✅ LLM analysis successful! Response length: {len(response.content)} characters")
-            print(f"✅ LLM analysis successful!")
-            print(f"🔍 DEBUG: LLM response length: {len(response.content)} characters")
-            print(f"🔍 DEBUG: LLM response preview: {response.content[:500]}...")
+            print(f" LLM analysis successful!")
+            print(f" DEBUG: LLM response length: {len(response.content)} characters")
+            print(f" DEBUG: LLM response preview: {response.content[:500]}...")
             
             # Return structured response
             structured_cards = self._extract_structured_cards(response.content, all_cards)
-            print(f"🔍 DEBUG: Extracted {len(structured_cards)} structured cards")
+            print(f" DEBUG: Extracted {len(structured_cards)} structured cards")
             
             return {
                 "text_response": response.content,
@@ -568,8 +568,8 @@ Return the response in this exact format:
             }
         except Exception as e:
             logger.error(f"❌ LLM analysis failed: {e}")
-            print(f"❌ LLM analysis failed: {e}")
-            print(f"🔄 Falling back to basic recommendation...")
+            print(f" LLM analysis failed: {e}")
+            print(f" Falling back to basic recommendation...")
             # Fallback recommendation
             fallback_text = self._generate_fallback_recommendation(user_profile, all_cards[:3] if all_cards else [])
             return {
@@ -581,9 +581,9 @@ Return the response in this exact format:
         """Extract structured card data from LLM response"""
         structured_cards = []
         
-        print(f"🔍 DEBUG: Starting structured card extraction...")
-        print(f"🔍 DEBUG: Response text length: {len(response_text)} characters")
-        print(f"🔍 DEBUG: Available cards in database: {len(all_cards)}")
+        print(f" DEBUG: Starting structured card extraction...")
+        print(f" DEBUG: Response text length: {len(response_text)} characters")
+        print(f" DEBUG: Available cards in database: {len(all_cards)}")
         
         # Debug: Log all available card names
         available_card_names = []
@@ -592,7 +592,7 @@ Return the response in this exact format:
             card_name = card.get('name', card.get('Card name', 'Unknown'))
             available_card_names.append(card_name)
         
-        print(f"🔍 DEBUG: Available card names in database:")
+        print(f" DEBUG: Available card names in database:")
         for i, name in enumerate(available_card_names[:10]):  # Show first 10
             print(f"  {i+1}. {name}")
         
@@ -600,19 +600,19 @@ Return the response in this exact format:
         card_blocks = re.split(r'(?=\d+\.\s+\*\*)\s*', response_text)
         card_blocks = [block.strip() for block in card_blocks if block.strip()]
         
-        print(f"🔍 DEBUG: Found {len(card_blocks)} card blocks in LLM response")
+        print(f" DEBUG: Found {len(card_blocks)} card blocks in LLM response")
         
         for i, block in enumerate(card_blocks):
-            print(f"🔍 DEBUG: Processing card block {i+1}...")
+            print(f" DEBUG: Processing card block {i+1}...")
             
             # Extract card name
             name_match = re.search(r'\*\*([^*]+)\*\*', block)
             if not name_match:
-                print(f"🔍 DEBUG: No card name found in block {i+1}")
+                print(f" DEBUG: No card name found in block {i+1}")
                 continue
                 
             card_name = name_match.group(1).strip()
-            print(f"🔍 DEBUG: LLM returned card name: '{card_name}'")
+            print(f" DEBUG: LLM returned card name: '{card_name}'")
             
             # Find the actual card data from database
             card_data = None
@@ -621,17 +621,17 @@ Return the response in this exact format:
                 db_card_name = card.get('name', card.get('Card name', ''))
                 if db_card_name.lower() == card_name.lower():
                     card_data = card
-                    print(f"🔍 DEBUG: ✅ Found exact match: '{db_card_name}'")
+                    print(f" DEBUG:  Found exact match: '{db_card_name}'")
                     break
         
             if not card_data:
-                print(f"🔍 DEBUG: ❌ No exact match found for: '{card_name}'")
+                print(f" DEBUG:  No exact match found for: '{card_name}'")
                 # Try fuzzy matching
                 for card in all_cards:
                     db_card_name = card.get('name', card.get('Card name', ''))
                     if any(word in db_card_name.lower() for word in card_name.lower().split()):
                         card_data = card
-                        print(f"🔍 DEBUG: ✅ Fuzzy match found: '{db_card_name}' for '{card_name}'")
+                        print(f" DEBUG:  Fuzzy match found: '{db_card_name}' for '{card_name}'")
                         break
             
             if card_data:
@@ -650,13 +650,13 @@ Return the response in this exact format:
                     'reasoning': self._extract_reasoning(block)
                 }
                 structured_cards.append(structured_card)
-                print(f"🔍 DEBUG: ✅ Added structured card: {structured_card['name']}")
+                print(f" DEBUG:  Added structured card: {structured_card['name']}")
             else:
-                print(f"�� DEBUG: ❌ Could not find card data for: '{card_name}'")
+                print(f"�� DEBUG:  Could not find card data for: '{card_name}'")
         
-        print(f"🔍 DEBUG: Final structured cards count: {len(structured_cards)}")
+        print(f" DEBUG: Final structured cards count: {len(structured_cards)}")
         for i, card in enumerate(structured_cards):
-            print(f"🔍 DEBUG: Structured card {i+1}: {card['name']} by {card['issuer']}")
+            print(f" DEBUG: Structured card {i+1}: {card['name']} by {card['issuer']}")
         
         return structured_cards
 

@@ -23,7 +23,7 @@ const LandingPage = () => {
             spending habits — all with one simple conversation.
           </p>
           <Link
-            to="/questionnaire"
+            to="/questionnaire-loading"
             className="inline-flex items-center gap-3 text-md font-medium px-8 py-4 rounded-full bg-white text-gray-900 hover:bg-gray-200 transition duration-200"
           >
             Find Your Match <FaAngleRight className="text-xl" />

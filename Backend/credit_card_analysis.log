@@ -7945,3 +7945,48 @@
 2025-08-03 01:17:12,598 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
 2025-08-03 01:17:12,604 - agent.nodes - INFO - ✅ LLM analysis successful! Response length: 1871 characters
 2025-08-03 01:17:12,605 - agent.nodes - INFO - ✅ Analysis completed successfully
+2025-08-03 18:35:01,503 - agent.tools - INFO - 🔧 Creating tools...
+2025-08-03 18:35:01,504 - data_pipeline.database - INFO - 🔧 Initializing JSONDatabaseManager with file: database.json
+2025-08-03 18:35:01,504 - data_pipeline.database - INFO - 📂 Loading credit card data from database.json
+2025-08-03 18:35:01,504 - data_pipeline.database - INFO - ✅ Successfully loaded 14 issuers from database
+2025-08-03 18:35:01,504 - agent.tools - INFO - 📊 Database manager initialized
+2025-08-03 18:35:01,504 - agent.tools - INFO - 🔧 Initialized agent_0 with database manager
+2025-08-03 18:35:01,505 - agent.tools - INFO - 🔧 Initialized agent_1 with database manager
+2025-08-03 18:35:01,505 - agent.tools - INFO - 🔧 Initialized agent_2 with database manager
+2025-08-03 18:35:01,505 - agent.tools - INFO - 🔧 Initialized Final Card Selection Tool
+2025-08-03 18:35:01,505 - agent.tools - INFO - ✅ All tools created successfully
+2025-08-03 18:35:01,766 - data_pipeline.database - INFO - 🔧 Initializing JSONDatabaseManager with file: database.json
+2025-08-03 18:35:01,766 - data_pipeline.database - INFO - 📂 Loading credit card data from database.json
+2025-08-03 18:35:01,766 - data_pipeline.database - INFO - ✅ Successfully loaded 14 issuers from database
+2025-08-03 18:35:01,766 - data_pipeline.database - INFO - 📊 Getting all cards from database...
+2025-08-03 18:35:01,767 - data_pipeline.database - INFO - ✅ Retrieved 77 total cards from database
+2025-08-03 18:41:40,350 - agent.tools - INFO - 🔧 Creating tools...
+2025-08-03 18:41:40,350 - data_pipeline.database - INFO - 🔧 Initializing JSONDatabaseManager with file: database.json
+2025-08-03 18:41:40,350 - data_pipeline.database - INFO - 📂 Loading credit card data from database.json
+2025-08-03 18:41:40,350 - data_pipeline.database - INFO - ✅ Successfully loaded 14 issuers from database
+2025-08-03 18:41:40,350 - agent.tools - INFO - 📊 Database manager initialized
+2025-08-03 18:41:40,350 - agent.tools - INFO - 🔧 Initialized agent_0 with database manager
+2025-08-03 18:41:40,350 - agent.tools - INFO - 🔧 Initialized agent_1 with database manager
+2025-08-03 18:41:40,350 - agent.tools - INFO - 🔧 Initialized agent_2 with database manager
+2025-08-03 18:41:40,351 - agent.tools - INFO - 🔧 Initialized Final Card Selection Tool
+2025-08-03 18:41:40,351 - agent.tools - INFO - ✅ All tools created successfully
+2025-08-03 18:41:40,556 - data_pipeline.database - INFO - 🔧 Initializing JSONDatabaseManager with file: database.json
+2025-08-03 18:41:40,556 - data_pipeline.database - INFO - 📂 Loading credit card data from database.json
+2025-08-03 18:41:40,557 - data_pipeline.database - INFO - ✅ Successfully loaded 14 issuers from database
+2025-08-03 18:41:40,557 - data_pipeline.database - INFO - 📊 Getting all cards from database...
+2025-08-03 18:41:40,557 - data_pipeline.database - INFO - ✅ Retrieved 77 total cards from database
+2025-08-03 18:52:02,344 - agent.tools - INFO - 🔧 Creating tools...
+2025-08-03 18:52:02,344 - data_pipeline.database - INFO - 🔧 Initializing JSONDatabaseManager with file: database.json
+2025-08-03 18:52:02,344 - data_pipeline.database - INFO - 📂 Loading credit card data from database.json
+2025-08-03 18:52:02,345 - data_pipeline.database - INFO - ✅ Successfully loaded 14 issuers from database
+2025-08-03 18:52:02,345 - agent.tools - INFO - 📊 Database manager initialized
+2025-08-03 18:52:02,345 - agent.tools - INFO - 🔧 Initialized agent_0 with database manager
+2025-08-03 18:52:02,345 - agent.tools - INFO - 🔧 Initialized agent_1 with database manager
+2025-08-03 18:52:02,345 - agent.tools - INFO - 🔧 Initialized agent_2 with database manager
+2025-08-03 18:52:02,345 - agent.tools - INFO - 🔧 Initialized Final Card Selection Tool
+2025-08-03 18:52:02,345 - agent.tools - INFO - ✅ All tools created successfully
+2025-08-03 18:52:02,568 - data_pipeline.database - INFO - 🔧 Initializing JSONDatabaseManager with file: database.json
+2025-08-03 18:52:02,568 - data_pipeline.database - INFO - 📂 Loading credit card data from database.json
+2025-08-03 18:52:02,569 - data_pipeline.database - INFO - ✅ Successfully loaded 14 issuers from database
+2025-08-03 18:52:02,569 - data_pipeline.database - INFO - 📊 Getting all cards from database...
+2025-08-03 18:52:02,570 - data_pipeline.database - INFO - ✅ Retrieved 77 total cards from database

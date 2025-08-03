@@ -86,7 +86,7 @@ async def root():
 async def start_conversation():
     """Start a new conversation"""
     try:
-        print("\n🚀 START CONVERSATION ENDPOINT CALLED")
+        print("\nSTART CONVERSATION ENDPOINT CALLED")
         
         # Create new conversation state
         from agent.nodes import State
@@ -97,13 +97,13 @@ async def start_conversation():
         session_id = str(uuid.uuid4())
         conversation_states[session_id] = state
         
-        print(f"🆕 Created new conversation session: {session_id}")
+        print(f" Created new conversation session: {session_id}")
         
         # Get initial question
-        print("🔄 Getting initial question...")
+        print("Getting initial question...")
         result = conversation_manager.process_message(state, None)
         
-        print(f"📋 START RESPONSE:")
+        print(f" START RESPONSE:")
         print(f"Session ID: {session_id}")
         print(f"Initial Question: '{result['response'][:100]}...' (truncated)")
         
@@ -114,7 +114,7 @@ async def start_conversation():
         )
     
     except Exception as e:
-        print(f"❌ ERROR in start_conversation: {str(e)}")
+        print(f"ERROR in start_conversation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error starting conversation: {str(e)}")
 
 @app.post("/chat", response_model=ChatResponse)
@@ -122,21 +122,21 @@ async def chat(request: ChatRequest):
     """Send a message to the agent"""
     try:
         print(f"\n💬 CHAT ENDPOINT CALLED")
-        print(f"📝 Received message: '{request.message}'")
-        print(f"🆔 Session ID: {request.session_id}")
+        print(f"Received message: '{request.message}'")
+        print(f" Session ID: {request.session_id}")
         
         if request.session_id not in conversation_states:
-            print(f"❌ Session {request.session_id} not found")
+            print(f"Session {request.session_id} not found")
             raise HTTPException(status_code=404, detail="Session not found")
         
         state = conversation_states[request.session_id]
-        print(f"✅ Found existing session")
+        print(f"Found existing session")
         
         # Process the message
-        print("🔄 Processing message with conversation manager...")
+        print("Processing message with conversation manager...")
         result = conversation_manager.process_message(state, request.message)
         
-        print(f"📋 CHAT RESPONSE:")
+        print(f" CHAT RESPONSE:")
         print(f"Session ID: {request.session_id}")
         print(f"Response: '{result['response'][:100]}...' (truncated)")
         print(f"Is Complete: {result['is_complete']}")
@@ -150,20 +150,20 @@ async def chat(request: ChatRequest):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ ERROR in chat: {str(e)}")
+        print(f"ERROR in chat: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error processing message: {str(e)}")
 
 @app.post("/submit-profile", response_model=ChatResponse)
 async def submit_complete_profile(request: CompleteProfileRequest):
     """Submit a complete user profile and get recommendations in one call"""
     try:
-        print(f"\n📊 SUBMIT PROFILE ENDPOINT CALLED")
-        print(f"🆔 Session ID: {request.session_id}")
+        print(f"\nSUBMIT PROFILE ENDPOINT CALLED")
+        print(f" Session ID: {request.session_id}")
         
         # Get or create session
         if request.session_id and request.session_id in conversation_states:
             state = conversation_states[request.session_id]
-            print(f"✅ Using existing session")
+            print(f"Using existing session")
         else:
             # Create new session if none exists
             from agent.nodes import State
@@ -172,7 +172,7 @@ async def submit_complete_profile(request: CompleteProfileRequest):
             session_id = str(uuid.uuid4())
             conversation_states[session_id] = state
             request.session_id = session_id
-            print(f"🆕 Created new session: {session_id}")
+            print(f" Created new session: {session_id}")
         
         # Convert request to profile dictionary
         complete_profile = {
@@ -188,7 +188,7 @@ async def submit_complete_profile(request: CompleteProfileRequest):
         }
         
         # Log the incoming profile
-        print(f"\n🔍 RECEIVED PROFILE:")
+        print(f"\nRECEIVED PROFILE:")
         print(f"Session ID: {request.session_id}")
         print(f"Primary Goal: {request.primary_goal}")
         print(f"Spend Category: {request.top_spend_category}")
@@ -201,7 +201,7 @@ async def submit_complete_profile(request: CompleteProfileRequest):
         print(f"Credit Situation: {request.credit_situation}")
         
         # Submit complete profile and get recommendations
-        print("🔄 Submitting complete profile to conversation manager...")
+        print("Submitting complete profile to conversation manager...")
         result = conversation_manager.submit_complete_profile(state, complete_profile)
         
         # Get conversation summary
@@ -215,18 +215,18 @@ async def submit_complete_profile(request: CompleteProfileRequest):
         if isinstance(result["response"], dict):
             response_text = result["response"].get("text_response", str(result["response"]))
             structured_cards = result["response"].get("structured_cards", [])
-            print(f"🔍 DEBUG: Found structured response with {len(structured_cards)} cards")
+            print(f"DEBUG: Found structured response with {len(structured_cards)} cards")
         else:
-            print(f"🔍 DEBUG: Response is string, no structured cards")
+            print(f"DEBUG: Response is string, no structured cards")
         
         # Log the response
-        print(f"\n📋 RESPONSE:")
+        print(f"\n RESPONSE:")
         print(f"Session ID: {request.session_id}")
         print(f"Is Complete: {result['is_complete']}")
         print(f"Questions Completed: {summary.get('questions_completed', 0)}/{summary.get('total_questions', 0)}")
         print(f"Response Length: {len(response_text)} characters")
         print(f"Structured Cards: {len(structured_cards)}")
-        print(f"\n🎯 FULL CREDIT CARD RECOMMENDATIONS:")
+        print(f"\nFULL CREDIT CARD RECOMMENDATIONS:")
         print("=" * 80)
         print(response_text)
         print("=" * 80)
@@ -240,7 +240,7 @@ async def submit_complete_profile(request: CompleteProfileRequest):
         )
     
     except Exception as e:
-        print(f"\n❌ ERROR: {str(e)}")
+        print(f"\nERROR: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error processing complete profile: {str(e)}")
 
 @app.get("/status/{session_id}")

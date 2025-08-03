@@ -25,10 +25,10 @@ def test_llm_direct():
     # Check if API key is set
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key or api_key == "your_openai_api_key_here":
-        print("❌ OPENAI_API_KEY not set or is placeholder")
+        print(" OPENAI_API_KEY not set or is placeholder")
         return False
     
-    print(f"✅ OPENAI_API_KEY found: {api_key[:20]}...")
+    print(f" OPENAI_API_KEY found: {api_key[:20]}...")
     
     try:
         # Initialize LLM
@@ -44,14 +44,14 @@ def test_llm_direct():
             HumanMessage(content="Say 'Hello, LLM is working!'")
         ]
         
-        print("🔄 Testing LLM response...")
+        print(" Testing LLM response...")
         response = llm.invoke(messages)
         
-        print(f"✅ LLM Response: {response.content}")
+        print(f" LLM Response: {response.content}")
         return True
         
     except Exception as e:
-        print(f"❌ LLM Error: {e}")
+        print(f" LLM Error: {e}")
         return False
 
 if __name__ == "__main__":
@@ -59,4 +59,4 @@ if __name__ == "__main__":
     if success:
         print("\n🎉 LLM is working correctly!")
     else:
-        print("\n❌ LLM test failed!") 
+        print("\n LLM test failed!") 

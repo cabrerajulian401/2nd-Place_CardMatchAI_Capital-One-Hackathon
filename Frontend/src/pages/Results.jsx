@@ -10,8 +10,8 @@ export default function Results() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("🚀 Results page loaded");
-    console.log("📍 Location state:", location.state);
+    console.log("Results page loaded");
+    console.log(" Location state:", location.state);
     
     // Get recommendations from location state or localStorage
     const storedRecommendations = localStorage.getItem("creditCardRecommendations");
@@ -22,17 +22,17 @@ export default function Results() {
     const isValidLocationState = location.state?.recommendations && location.state.recommendations.trim().length > 0;
     
     if (isValidLocationState) {
-      console.log("✅ Using recommendations from location state");
+              console.log("Using recommendations from location state");
       setRecommendations(location.state.recommendations);
       parseRecommendations(location.state.recommendations);
       setIsLoading(false);
     } else if (isValidRecommendations) {
-      console.log("✅ Using recommendations from localStorage");
+              console.log("Using recommendations from localStorage");
       setRecommendations(storedRecommendations);
       parseRecommendations(storedRecommendations);
       setIsLoading(false);
     } else {
-      console.log("❌ No valid recommendations found, clearing localStorage and redirecting to questionnaire");
+              console.log("No valid recommendations found, clearing localStorage and redirecting to questionnaire");
       // Clear any stale data
       localStorage.removeItem("creditCardRecommendations");
       localStorage.removeItem("conversationSummary");
@@ -41,17 +41,17 @@ export default function Results() {
   }, [location.state, navigate]);
 
   const parseRecommendations = (text) => {
-    console.log("🔍 Parsing recommendations text:", text);
-    console.log("📏 Text length:", text.length);
+          console.log("Parsing recommendations text:", text);
+    console.log(" Text length:", text.length);
     
     const cards = [];
     
     // Split by numbered items (1., 2., 3.)
     const cardBlocks = text.split(/(?=\d+\.\s+\*\*)/).filter(block => block.trim());
-    console.log("📋 Found card blocks:", cardBlocks.length);
+    console.log(" Found card blocks:", cardBlocks.length);
     
     cardBlocks.forEach((block, index) => {
-      console.log(`🔍 Processing block ${index + 1}:`, block.substring(0, 200) + "...");
+              console.log(`Processing block ${index + 1}:`, block.substring(0, 200) + "...");
       
       const lines = block.split('\n').filter(line => line.trim());
       
@@ -62,7 +62,7 @@ export default function Results() {
       console.log(` New card found: ${cardName}`);
       
       if (!cardName) {
-        console.log("❌ No card name found in block");
+                  console.log("No card name found in block");
         return;
       }
       
@@ -113,7 +113,7 @@ export default function Results() {
               key: trimmedKey,
               value: trimmedValue
             });
-            console.log(`✅ Added detail: ${trimmedKey} = ${trimmedValue}`);
+            console.log(`Added detail: ${trimmedKey} = ${trimmedValue}`);
           }
         }
         
@@ -129,7 +129,7 @@ export default function Results() {
               key: trimmedKey,
               value: trimmedValue
             });
-            console.log(`✅ Added bold detail: ${trimmedKey} = ${trimmedValue}`);
+            console.log(`Added bold detail: ${trimmedKey} = ${trimmedValue}`);
           }
         }
       }
@@ -137,21 +137,21 @@ export default function Results() {
       // Add reasoning if found
       if (reasoningText) {
         card.reasoning = reasoningText.trim();
-        console.log(`✅ Added reasoning: ${reasoningText.trim()}`);
+                    console.log(`Added reasoning: ${reasoningText.trim()}`);
       }
       
-      console.log(`✅ Adding card:`, card);
+              console.log(`Adding card:`, card);
       cards.push(card);
     });
     
     console.log(" Final parsed cards:", cards);
-    console.log("📊 Number of cards found:", cards.length);
+          console.log("Number of cards found:", cards.length);
     
     setParsedCards(cards);
   };
 
   const handleStartOver = () => {
-    console.log("🔄 Starting over - clearing localStorage and navigating to questionnaire");
+            console.log("Starting over - clearing localStorage and navigating to questionnaire");
     localStorage.removeItem("creditCardRecommendations");
     localStorage.removeItem("conversationSummary");
     navigate("/questionnaire");
@@ -165,7 +165,7 @@ export default function Results() {
   };
 
   if (isLoading) {
-    console.log("⏳ Results page is loading...");
+    console.log(" Results page is loading...");
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 flex items-center justify-center">
         <div className="text-center">
@@ -176,7 +176,7 @@ export default function Results() {
     );
   }
 
-  console.log("🎯 Rendering results with parsed cards:", parsedCards);
+      console.log("Rendering results with parsed cards:", parsedCards);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900">

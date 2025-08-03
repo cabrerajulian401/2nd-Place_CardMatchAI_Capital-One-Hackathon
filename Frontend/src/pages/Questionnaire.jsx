@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { startConversation, sendChat, submitCompleteProfile } from "../api/agent";
 import LoadingAnimation from '../components/LoadingAnimation';
 
@@ -15,6 +15,7 @@ export default function Questionnaire() {
   const [conversationHistory, setConversationHistory] = useState([]);
   const [profileData, setProfileData] = useState({});
   const navigate = useNavigate();
+  const location = useLocation();
   const [showLoading, setShowLoading] = useState(false);
 
   // Question configurations with options
@@ -130,49 +131,27 @@ export default function Questionnaire() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        console.log("🚀 Starting questionnaire initialization...");
-        
-        // Clear any previous session data to ensure fresh start
-        console.log("🧹 Clearing previous session data...");
-        localStorage.removeItem("creditCardRecommendations");
-        localStorage.removeItem("conversationSummary");
-        
-        // Reset all state to ensure fresh start
-        setSessionId(null);
-        setQuestion("");
-        setCurrentQuestionType("");
-        setSelectedOptions([]);
-        setFade(true);
-        setIsComplete(false);
-        setRecommendations("");
-        setIsLoading(false);
-        setConversationHistory([]);
-        setProfileData({});
-        setShowLoading(false);
-        setCurrentQuestionIndex(0);
-        
-        setIsLoading(true);
-        const data = await startConversation();
-        setSessionId(data.session_id);
-        setConversationHistory([{ role: "assistant", content: data.initial_question }]);
-        console.log("✅ Conversation started successfully:", {
-          sessionId: data.session_id,
-          initialQuestion: data.initial_question
-        });
-        
-        // Start with the first question
-        showQuestion(0);
-        
-      } catch (error) {
-        console.error("❌ Failed to start conversation:", error);
-        setQuestion("Sorry, there was an error starting the conversation. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    init();
+    // Clear any previous session data to ensure fresh start
+    console.log("Clearing previous session data...");
+    localStorage.removeItem("creditCardRecommendations");
+    localStorage.removeItem("conversationSummary");
+    
+    // Reset all state to ensure fresh start
+    setSessionId(null);
+    setQuestion("");
+    setCurrentQuestionType("");
+    setSelectedOptions([]);
+    setFade(true);
+    setIsComplete(false);
+    setRecommendations("");
+    setIsLoading(false);
+    setConversationHistory([]);
+    setProfileData({});
+    setShowLoading(false);
+    setCurrentQuestionIndex(0);
+    
+    // Start with the first question immediately without backend initialization
+    showQuestion(0);
   }, []);
 
   const showQuestion = (index) => {
@@ -212,7 +191,7 @@ export default function Questionnaire() {
     e.preventDefault();
     if (selectedOptions.length === 0 || isLoading) return;
 
-    console.log("📝 User selected options:", selectedOptions);
+    console.log("User selected options:", selectedOptions);
     setIsLoading(true);
     setFade(false);
     
@@ -224,30 +203,48 @@ export default function Questionnaire() {
       answer = selectedOptions[0];
     }
     
+    // Check if this is the first answer (no sessionId yet)
+    const isFirstAnswer = !sessionId;
+    
     // Add user's answer to conversation history
     const updatedHistory = [...conversationHistory, { role: "user", content: answer }];
     setConversationHistory(updatedHistory);
-    console.log("📚 Updated conversation history:", updatedHistory);
+    console.log("Updated conversation history:", updatedHistory);
     
     // Check if this is the last question
     const isLastQuestion = currentQuestionIndex === questionOrder.length - 1;
     
     if (isLastQuestion) {
       // For the last question, show loading animation immediately
-      console.log("🎯 Last question submitted! Showing loading animation immediately...");
+      console.log("Last question submitted! Showing loading animation immediately...");
       setShowLoading(true);
       
       // Continue with the API call in the background
       setTimeout(async () => {
         try {
-          console.log("🔄 Sending final message to backend...");
-          const res = await sendChat(sessionId, answer);
+          let res;
+          
+          if (isFirstAnswer) {
+            // Start the conversation with the backend for the first answer
+            console.log("Starting conversation with backend for first answer...");
+            const startData = await startConversation();
+            setSessionId(startData.session_id);
+            
+            // Send the first answer
+            console.log("Sending first message to backend...");
+            res = await sendChat(startData.session_id, answer);
+          } else {
+            // For subsequent answers, use existing session
+            console.log("Sending final message to backend...");
+            res = await sendChat(sessionId, answer);
+          }
+          
           setIsComplete(res.is_complete);
           
           // Add assistant's response to conversation history
           const newHistory = [...updatedHistory, { role: "assistant", content: res.response }];
           setConversationHistory(newHistory);
-          console.log("✅ Received final response from backend:", {
+          console.log("Received final response from backend:", {
             response: res.response,
             isComplete: res.is_complete,
             sessionId: res.session_id
@@ -256,13 +253,13 @@ export default function Questionnaire() {
           // Extract profile data from the conversation
           const currentProfileData = extractProfileData(newHistory);
           setProfileData(currentProfileData);
-          console.log("📊 Extracted profile data:", currentProfileData);
+          console.log(" Extracted profile data:", currentProfileData);
           
           // Submit complete profile for recommendations and wait for it to complete
           await submitCompleteProfileAndGetRecommendations(currentProfileData);
           
           // Only after recommendations are ready, allow the loading animation to complete
-          console.log("✅ All API calls completed, loading animation can now finish");
+          console.log("All API calls completed, loading animation can now finish");
           
           // Signal to the loading animation that it can complete
           if (window.signalLoadingComplete) {
@@ -270,7 +267,7 @@ export default function Questionnaire() {
           }
           
         } catch (error) {
-          console.error("❌ Failed to send final message:", error);
+          console.error("Failed to send final message:", error);
           // If there's an error, hide loading and show error
           setShowLoading(false);
           setQuestion("Sorry, there was an error processing your response. Please try again.");
@@ -282,15 +279,30 @@ export default function Questionnaire() {
       // For non-last questions, use the normal flow
       setTimeout(async () => {
         try {
-          console.log("🔄 Sending message to backend...");
-          const res = await sendChat(sessionId, answer);
+          let res;
+          
+          if (isFirstAnswer) {
+            // Start the conversation with the backend for the first answer
+            console.log("Starting conversation with backend for first answer...");
+            const startData = await startConversation();
+            setSessionId(startData.session_id);
+            
+            // Send the first answer
+            console.log("Sending first message to backend...");
+            res = await sendChat(startData.session_id, answer);
+          } else {
+            // For subsequent answers, use existing session
+            console.log("Sending message to backend...");
+            res = await sendChat(sessionId, answer);
+          }
+          
           setSelectedOptions([]);
           setIsComplete(res.is_complete);
           
           // Add assistant's response to conversation history
           const newHistory = [...updatedHistory, { role: "assistant", content: res.response }];
           setConversationHistory(newHistory);
-          console.log("✅ Received response from backend:", {
+          console.log("Received response from backend:", {
             response: res.response,
             isComplete: res.is_complete,
             sessionId: res.session_id
@@ -299,10 +311,10 @@ export default function Questionnaire() {
           // Extract profile data from the conversation
           const currentProfileData = extractProfileData(newHistory);
           setProfileData(currentProfileData);
-          console.log("📊 Extracted profile data:", currentProfileData);
+          console.log(" Extracted profile data:", currentProfileData);
           
           if (res.is_complete) {
-            console.log("🎯 Conversation complete! Submitting profile for recommendations...");
+            console.log("Conversation complete! Submitting profile for recommendations...");
             await submitCompleteProfileAndGetRecommendations(currentProfileData);
           } else {
             // Move to next question
@@ -311,7 +323,7 @@ export default function Questionnaire() {
           
           setFade(true);
         } catch (error) {
-          console.error("❌ Failed to send message:", error);
+          console.error("Failed to send message:", error);
           setQuestion("Sorry, there was an error processing your response. Please try again.");
           setFade(true);
         } finally {
@@ -322,9 +334,9 @@ export default function Questionnaire() {
   };
 
   const extractProfileData = (history) => {
-    console.log("🔍 Extracting profile data from conversation history...");
+    console.log("Extracting profile data from conversation history...");
     const profile = {
-      session_id: sessionId,
+      session_id: sessionId || "pending",
       primary_goal: "",
       top_spend_category: "",
       brand_preferences: "",
@@ -341,26 +353,26 @@ export default function Questionnaire() {
       if (entry.role === "user") {
         const answer = entry.content;
         
-        // Map based on question order
-        const questionIndex = Math.floor((index - 1) / 2);
+        // Map based on question order (adjust for first answer)
+        const questionIndex = Math.floor(index / 2);
         if (questionIndex < questionOrder.length) {
           const fieldName = questionOrder[questionIndex];
           profile[fieldName] = answer;
-          console.log(`✅ Mapped to ${fieldName}:`, answer);
+          console.log(`Mapped to ${fieldName}:`, answer);
         }
       }
     });
 
-    console.log("📋 Final extracted profile:", profile);
+    console.log(" Final extracted profile:", profile);
     return profile;
   };
 
   const submitCompleteProfileAndGetRecommendations = async (profileData) => {
     try {
-      console.log("🚀 Submitting complete profile to backend:", profileData);
+      console.log("Submitting complete profile to backend:", profileData);
       
       const res = await submitCompleteProfile(profileData);
-      console.log("✅ Received recommendations from backend:", {
+              console.log("Received recommendations from backend:", {
         response: res.response,
         sessionId: res.session_id,
         isComplete: res.is_complete,
@@ -378,10 +390,10 @@ export default function Questionnaire() {
       setRecommendations(res.response);
       
       // Loading animation is already shown, so we don't need to set it again
-      console.log("✅ Loading animation already active, waiting for completion...");
+              console.log("Loading animation already active, waiting for completion...");
       
     } catch (error) {
-      console.error("❌ Failed to submit complete profile:", error);
+      console.error(" Failed to submit complete profile:", error);
       // If there's an error, hide loading and show error
       setShowLoading(false);
       setQuestion("Sorry, there was an error getting your recommendations. Please try again.");
@@ -390,7 +402,7 @@ export default function Questionnaire() {
   };
 
   const handleLoadingComplete = () => {
-    console.log("🔄 Loading complete, navigating to results...");
+    console.log("Loading complete, navigating to results...");
     
     // Get recommendations from component state or localStorage as fallback
     const recommendationsToPass = recommendations || localStorage.getItem("creditCardRecommendations");
