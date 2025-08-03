@@ -1,1 +1,1 @@
-# 2nd-Place---CreditMatchAI---Capital-One-Hackathon
+# 2nd-Place---CardMatchAI---Capital-One-Hackathon
