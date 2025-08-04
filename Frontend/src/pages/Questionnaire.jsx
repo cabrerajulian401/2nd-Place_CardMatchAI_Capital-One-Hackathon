@@ -276,7 +276,14 @@ export default function Questionnaire() {
         }
       }, 300);
     } else {
-      // For non-last questions, use the normal flow
+      // For non-last questions, use asynchronous flow
+      setSelectedOptions([]);
+      setFade(true);
+      
+      // Move to next question immediately
+      showQuestion(currentQuestionIndex + 1);
+      
+      // Send message to backend asynchronously (don't wait for response)
       setTimeout(async () => {
         try {
           let res;
@@ -296,7 +303,6 @@ export default function Questionnaire() {
             res = await sendChat(sessionId, answer);
           }
           
-          setSelectedOptions([]);
           setIsComplete(res.is_complete);
           
           // Add assistant's response to conversation history
@@ -311,25 +317,21 @@ export default function Questionnaire() {
           // Extract profile data from the conversation
           const currentProfileData = extractProfileData(newHistory);
           setProfileData(currentProfileData);
-          console.log(" Extracted profile data:", currentProfileData);
+          console.log("Extracted profile data:", currentProfileData);
           
           if (res.is_complete) {
             console.log("Conversation complete! Submitting profile for recommendations...");
             await submitCompleteProfileAndGetRecommendations(currentProfileData);
-          } else {
-            // Move to next question
-            showQuestion(currentQuestionIndex + 1);
           }
           
-          setFade(true);
         } catch (error) {
           console.error("Failed to send message:", error);
-          setQuestion("Sorry, there was an error processing your response. Please try again.");
-          setFade(true);
+          // Don't show error to user since we've already moved to next question
+          // Just log it for debugging
         } finally {
           setIsLoading(false);
         }
-      }, 300);
+      }, 100); // Reduced delay since we're not waiting for response
     }
   };
 
