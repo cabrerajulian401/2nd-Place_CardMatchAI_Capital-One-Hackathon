@@ -29,7 +29,7 @@ const Hero = () => {
       className="relative w-full h-screen bg-gradient-to-br from-gray-950 to-gray-900 overflow-hidden"
     >
       {/* Credit Card Model */}
-      <div className="absolute top-1/2 right-10 transform -translate-y-1/2 z-5 md:block hidden">
+      <div className="absolute inset-0 z-5 md:block hidden">
         <CreditCardModel />
       </div>
       

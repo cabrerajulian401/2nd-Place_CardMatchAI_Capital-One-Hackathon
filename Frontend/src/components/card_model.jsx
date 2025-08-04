@@ -29,7 +29,7 @@ export function CreditCardModel({ mobile = false, ...props }) {
   return (
     <div 
       {...props} 
-      className={`${mobile ? 'w-72 h-48' : 'w-96 h-64'} rounded-lg shadow-2xl cursor-pointer overflow-hidden relative`}
+      className={`${mobile ? 'w-72 h-48' : 'w-[28rem] h-[18rem]'} rounded-lg shadow-2xl cursor-pointer overflow-hidden relative`}
       style={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         transform: `perspective(1200px) rotateY(${35 + mousePosition.x * 10}deg) rotateX(${8 + mousePosition.y * 5}deg) scale(${isHovered ? 1.08 : 1}) translateZ(${isHovered ? 40 : 0}px)`,
@@ -39,7 +39,7 @@ export function CreditCardModel({ mobile = false, ...props }) {
           : '0 10px 30px rgba(0, 0, 0, 0.3)',
         animation: mobile ? 'rotate3DMobile 4s ease-in-out infinite' : 'rotate3D 4s ease-in-out infinite',
         position: mobile ? 'relative' : 'absolute',
-        right: mobile ? 'auto' : '50px',
+        right: mobile ? 'auto' : '110px',
         top: mobile ? 'auto' : '50%',
         transform: mobile ? 'perspective(1200px) rotateY(35deg) rotateX(8deg)' : 'translateY(-50%) perspective(1200px) rotateY(35deg) rotateX(8deg)',
       }}
