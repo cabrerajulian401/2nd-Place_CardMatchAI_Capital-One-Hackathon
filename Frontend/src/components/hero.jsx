@@ -34,7 +34,7 @@ const Hero = () => {
       </div>
       
       {/* Mobile Credit Card Model - positioned below text */}
-      <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-5 md:hidden block">
+      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-5 md:hidden block">
         <CreditCardModel mobile={true} />
       </div>
 
@@ -48,7 +48,7 @@ const Hero = () => {
         animate="show"
         className="absolute inset-0 z-20 flex items-center justify-center px-4 sm:px-8 md:px-16"
       >
-        <div className="w-full max-w-screen-xl mx-auto flex flex-col items-start justify-center -mt-16 md:-mt-8">
+        <div className="w-full max-w-screen-xl mx-auto flex flex-col items-start justify-center -mt-56 md:-mt-8">
           <motion.h1
             variants={itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl font-light mb-8 text-white"
