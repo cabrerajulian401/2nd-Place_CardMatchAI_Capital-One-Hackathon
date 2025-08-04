@@ -29,8 +29,13 @@ const Hero = () => {
       className="relative w-full h-screen bg-gradient-to-br from-gray-950 to-gray-900 overflow-hidden"
     >
       {/* Credit Card Model */}
-      <div className="absolute top-1/2 right-10 transform -translate-y-1/2 z-5">
+      <div className="absolute top-1/2 right-10 transform -translate-y-1/2 z-5 md:block hidden">
         <CreditCardModel />
+      </div>
+      
+      {/* Mobile Credit Card Model - positioned below text */}
+      <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-5 md:hidden block">
+        <CreditCardModel mobile={true} />
       </div>
 
       {/* Gradient overlay */}
@@ -43,7 +48,7 @@ const Hero = () => {
         animate="show"
         className="absolute inset-0 z-20 flex items-center justify-center px-4 sm:px-8 md:px-16"
       >
-        <div className="w-full max-w-screen-xl mx-auto flex flex-col items-start justify-center">
+        <div className="w-full max-w-screen-xl mx-auto flex flex-col items-start justify-center -mt-16 md:-mt-8">
           <motion.h1
             variants={itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl font-light mb-8 text-white"
@@ -56,7 +61,7 @@ const Hero = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-gray-200 text-sm sm:text-base font-semibold max-w-xl mb-10"
+            className="text-gray-200 text-sm sm:text-base font-semibold max-w-xl mb-6 md:mb-8"
           >
             Whether you're new to credit or a rewards pro, we'll guide you to the right card.
           </motion.p>

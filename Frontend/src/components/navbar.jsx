@@ -34,7 +34,7 @@ const NavBar = () => {
         </div>
 
         {/* Navigation Links */}
-        <div className="flex gap-16 items-center font-medium">
+        <div className="hidden md:flex gap-8 md:gap-12 lg:gap-16 items-center font-medium ml-auto mr-8">
           <Link
             to="home" smooth={true}
             className="text-white hover:cursor-pointer text-sm relative after:content-[''] after:block after:h-[2px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
@@ -65,8 +65,10 @@ const NavBar = () => {
           </a>
         </div>
         
-        <RouterLink to="/login" className="px-6 py-3 text-white text-md flex items-center gap-x-2 justify-center font-medium border border-gray-400 rounded-xl hover:bg-white hover:text-black transition-colors duration-200">
-          <h1>Find Your Match</h1> <FaRegArrowAltCircleRight size={24} />
+        <RouterLink to="/login" className="px-4 md:px-6 py-2 md:py-3 text-white text-sm md:text-md flex items-center gap-x-2 justify-center font-medium border border-gray-400 rounded-xl hover:bg-white hover:text-black transition-colors duration-200">
+          <h1 className="hidden sm:block">Find Your Match</h1>
+          <h1 className="sm:hidden">Match</h1>
+          <FaRegArrowAltCircleRight size={20} className="md:w-6 md:h-6 w-5 h-5" />
         </RouterLink>
       </div>
     </div>
