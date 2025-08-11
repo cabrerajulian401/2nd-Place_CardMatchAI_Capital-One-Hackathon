@@ -8,24 +8,23 @@ logger = logging.getLogger(__name__)
 from datetime import datetime
 
 class JSONDatabaseManager:
-    """Database manager for credit card data stored in JSON format"""
+    
     
     def __init__(self, json_file_path: str = "database.json"):
         self.json_file_path = json_file_path
-        logger.info(f"🔧 Initializing JSONDatabaseManager with file: {json_file_path}")
+        logger.info(f"i nitializing JSONDatabaseManager with file: {json_file_path}")
         self.cards_data = self._load_cards_data()
     
     def _load_cards_data(self) -> Dict[str, List[Dict[str, Any]]]:
         """Load credit card data from JSON file"""
         try:
             if os.path.exists(self.json_file_path):
-                logger.info(f"📂 Loading credit card data from {self.json_file_path}")
+                logger.info(f"loading card data from {self.json_file_path}")
                 with open(self.json_file_path, 'r') as f:
                     data = json.load(f)
-                logger.info(f"✅ Successfully loaded {len(data)} issuers from database")
                 return data
             else:
-                logger.warning(f"⚠️ {self.json_file_path} not found. Using empty database.")
+                logger.warning(f" {self.json_file_path} not found. Using empty database.")
                 print(f"Warning: {self.json_file_path} not found. Using empty database.")
                 return {}
         except Exception as e:
@@ -34,19 +33,19 @@ class JSONDatabaseManager:
             return {}
     
     def get_all_cards(self) -> List[Dict[str, Any]]:
-        """Get all credit cards from the database in a clean format for LLM analysis"""
-        logger.info("📊 Getting all cards from database...")
+        
+        logger.info("getting all cards from database...")
         all_cards = []
         for issuer, cards in self.cards_data.items():
             for card in cards:
                 # Standardize card format
                 standardized_card = self._standardize_card_format(card, issuer)
                 all_cards.append(standardized_card)
-        logger.info(f"✅ Retrieved {len(all_cards)} total cards from database")
+        logger.info("retrieved cards from database")
         return all_cards
     
     def _standardize_card_format(self, card: Dict[str, Any], issuer: str) -> Dict[str, Any]:
-        """Convert card data to standardized format for LLM analysis"""
+        
         # Extract annual fee
         annual_fee = 0.0
         if card.get("Annual fee"):
@@ -134,7 +133,7 @@ class JSONDatabaseManager:
         print(f"DEBUG: Total cards loaded from database: {len(all_cards)}")
         print(f"DEBUG: First 3 card names: {[card.get('Card name', 'Unknown') for card in all_cards[:3]]}")
         print(f"DEBUG: Last 3 card names: {[card.get('Card name', 'Unknown') for card in all_cards[-3:]]}")
-        logger.info(f"📊 Total cards available for LLM analysis: {len(all_cards)}")
+        logger.info(f"total cards available for LLM analysis: {len(all_cards)}")
         return all_cards
     
     def close(self):
