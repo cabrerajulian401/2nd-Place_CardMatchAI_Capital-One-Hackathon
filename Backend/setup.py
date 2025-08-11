@@ -140,7 +140,7 @@ def main():
     
     # Run data pipeline
     if not run_data_pipeline():
-        print("⚠️  Data pipeline failed, but system can still run with sample data")
+        print(" Data pipeline failed, but system can still run with sample data")
     
     print("\n" + "=" * 50)
     print(" Setup completed successfully!")
@@ -154,7 +154,7 @@ def main():
     print("- OpenAI API Key: https://platform.openai.com/api-keys")
     print("- Tavily API Key: https://tavily.com/")
     
-    print("\n🌐 The system will be available at:")
+    print("\n The system will be available at:")
     print("- API: http://localhost:8000")
     print("- Frontend: Open frontend/index.html in browser")
 
