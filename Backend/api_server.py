@@ -121,7 +121,6 @@ async def start_conversation():
 async def chat(request: ChatRequest):
     """Send a message to the agent"""
     try:
-        print(f"\n💬 CHAT ENDPOINT CALLED")
         print(f"Received message: '{request.message}'")
         print(f" Session ID: {request.session_id}")
         
@@ -312,7 +311,7 @@ async def startup_event():
         
     except Exception as e:
         print(f"Warning: Could not initialize database on startup: {e}")
-        print("The system will still work, but with limited card data.")
+ 
 
 if __name__ == "__main__":
     import uvicorn
