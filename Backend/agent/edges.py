@@ -3,7 +3,6 @@ from langchain_openai import ChatOpenAI
 import os
 
 class ShouldContinueQuestioningEdge:
-    """Edge to determine if we should continue asking questions or move to analysis"""
     
     def __init__(self):
         self.llm = ChatOpenAI(
@@ -13,7 +12,6 @@ class ShouldContinueQuestioningEdge:
         )
     
     def should_continue(self, state) -> bool:
-        """Determine if we should continue asking questions"""
         # Check if all profile fields are filled
         for field, value in state.user_profile.items():
             if value is None:
@@ -23,10 +21,8 @@ class ShouldContinueQuestioningEdge:
         return False
 
 class ConversationRouter:
-    """Router to direct conversation flow"""
     
     def route_conversation(self, state, response: Dict[str, Any]) -> str:
-        """Route the conversation based on current state and response"""
         
         # If questions are completed, go to analysis
         if state.questions_completed:
@@ -40,10 +36,10 @@ class ConversationRouter:
         return "question_asking"
 
 class StateValidator:
-    """Validate state transitions"""
-    
+   
+    # This edge will help us determine whether all the fields needed are missing or not 
     def validate_state(self, state) -> Dict[str, Any]:
-        """Validate the current state and return any issues"""
+        
         issues = []
         
         # Check if all required fields are filled
@@ -67,7 +63,7 @@ class StateValidator:
         }
 
 class ConversationManager:
-    """Main conversation manager"""
+    
     
     def __init__(self, question_node, analysis_node, tools):
         self.question_node = question_node
@@ -101,7 +97,7 @@ class ConversationManager:
             }
     
     def process_message(self, state, user_message: str = None) -> Dict[str, Any]:
-        """Process a user message and return the appropriate response"""
+        
         
         # If this is the first message, start with questions
         if not state.conversation_history:
@@ -121,7 +117,8 @@ class ConversationManager:
             return self.analysis_node.analyze_and_recommend(state)
     
     def get_conversation_summary(self, state) -> Dict[str, Any]:
-        """Get a summary of the current conversation state"""
+
+        
         completed_questions = sum(1 for value in state.user_profile.values() if value is not None)
         total_questions = len(state.user_profile)
         
@@ -134,7 +131,7 @@ class ConversationManager:
         }
     
     def reset_conversation(self, state):
-        """Reset the conversation state"""
+        
         state.user_profile = {field: None for field in state.user_profile.keys()}
         state.conversation_history = []
         state.current_question = None
