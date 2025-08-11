@@ -37,8 +37,7 @@ class SubAgentCardAnalysisTool(BaseTool):
 
     def _run(self, user_profile: Dict[str, Any]) -> List[Dict[str, Any]]:
         try:
-            logger.info(f"🚀 {self._agent_id.upper()} starting analysis...")
-            print(f" DEBUG: {self._agent_id.upper()} - Starting analysis")
+            
             
             # Get all cards from database
             all_cards = self._db_manager.get_all_cards_for_llm()
@@ -109,8 +108,6 @@ CARDS: {json.dumps(card_data_for_llm, indent=1)}
 
 TASK: Select ~{len(card_data_for_llm)//2} best cards. Return JSON array with "name" and "reasoning" fields."""
 
-            logger.info(f"📝 {self._agent_id.upper()} created analysis prompt ({len(sub_agent_prompt)} characters)")
-            print(f" DEBUG: {self._agent_id.upper()} - Created prompt with {len(sub_agent_prompt)} characters")
             
             # Return the cards for this agent to analyze
             result = {
@@ -121,12 +118,12 @@ TASK: Select ~{len(card_data_for_llm)//2} best cards. Return JSON array with "na
                 "analysis_prompt": sub_agent_prompt
             }
             
-            logger.info(f"✅ {self._agent_id.upper()} completed data preparation")
+            logger.info(f" {self._agent_id.upper()} completed data preparation")
             print(f" DEBUG: {self._agent_id.upper()} - Completed data preparation")
             return result
             
         except Exception as e:
-            logger.error(f"❌ Error in {self._agent_id} analysis: {e}")
+            logger.error(f" Error in {self._agent_id} analysis: {e}")
             print(f" DEBUG: {self._agent_id.upper()} - ERROR: {e}")
             return {"agent_id": self._agent_id, "cards": [], "user_profile": user_profile}
 
@@ -139,17 +136,17 @@ class FinalCardSelectionTool(BaseTool):
     def __init__(self, db_manager: JSONDatabaseManager):
         super().__init__()
         self._db_manager = db_manager
-        logger.info("🔧 Initialized Final Card Selection Tool")
+        logger.info(" Initialized Final Card Selection Tool")
 
     def _run(self, user_profile: Dict[str, Any]) -> Dict[str, Any]:
         try:
-            logger.info("🎯 Final agent starting analysis...")
+            logger.info(" Final agent starting analysis...")
             
             # Get all cards from database
             all_cards = self._db_manager.get_all_cards_for_llm()
-            logger.info(f"📊 Final agent loaded {len(all_cards)} total cards")
+            logger.info(f" Final agent loaded {len(all_cards)} total cards")
             
-            print(f" FINAL AGENT: Analyzing {len(all_cards)} cards for final selection...")
+        
             
             # Create comprehensive card data for final LLM analysis (simplified)
             card_data_for_llm = []
@@ -166,7 +163,7 @@ class FinalCardSelectionTool(BaseTool):
                 }
                 card_data_for_llm.append(card_info)
             
-            logger.info(f"📋 Final agent prepared {len(card_data_for_llm)} cards for analysis")
+            logger.info(f" Final agent prepared {len(card_data_for_llm)} cards for analysis")
             
             # Return all cards with user profile for final LLM analysis
             result = {
@@ -176,20 +173,20 @@ class FinalCardSelectionTool(BaseTool):
                 "selection_instructions": "Select the BEST 3 cards for this user based on their profile."
             }
             
-            logger.info("✅ Final agent completed data preparation")
+            logger.info("Final agent completed data preparation")
             return result
             
         except Exception as e:
-            logger.error(f"❌ Error in final card selection: {e}")
+            logger.error(f" Error in final card selection: {e}")
             return {"error": str(e), "all_cards": [], "user_profile": user_profile}
 
 def create_tools():
     """Create and return all tools"""
-    logger.info("🔧 Creating tools...")
+    logger.info(" Creating tools")
     
     # Initialize database manager
     db_manager = JSONDatabaseManager()
-    logger.info("📊 Database manager initialized")
+    logger.info(" Database manager initialized")
     
     # Initialize tools
     sub_agent_0 = SubAgentCardAnalysisTool(db_manager, "agent_0")
@@ -197,7 +194,7 @@ def create_tools():
     sub_agent_2 = SubAgentCardAnalysisTool(db_manager, "agent_2")
     final_agent = FinalCardSelectionTool(db_manager)
     
-    logger.info("✅ All tools created successfully")
+    logger.info(" All tools created ")
     
     return {
         "sub_agent_0": sub_agent_0,
