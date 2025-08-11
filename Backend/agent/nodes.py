@@ -326,7 +326,7 @@ class FinalAnalysisNode:
             
             
             # Check if user is a student
-            is_student = user_profile.get('credit_situation', '').lower().find('student') != -
+            is_student = user_profile.get('credit_situation', '').lower().find('student') != -1
             
             # Create student-specific instructions for sub-agents
             student_instruction = ""
