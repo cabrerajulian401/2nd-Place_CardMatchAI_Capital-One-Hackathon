@@ -11,7 +11,7 @@ import re # Added for structured card extraction
 logger = logging.getLogger(__name__)
 
 class State:
-    """State class for the conversation"""
+    # initiating the state for the conversation and initializing the required fields/parameters
     def __init__(self):
         self.user_profile = {
             'primary_goal': None,
@@ -30,7 +30,7 @@ class State:
         self.questions_completed = False
 
 class QuestionAskerNode:
-    """Node responsible for asking questions to gather user profile"""
+    
     
     def __init__(self):
         # LLM Configuration
@@ -40,7 +40,7 @@ class QuestionAskerNode:
             api_key=os.getenv("OPENAI_API_KEY")
         )
         
-        # ⚠️ EDIT HERE: Question definitions
+       
         self.questions = [
             {
                 'field': 'primary_goal',
@@ -89,9 +89,9 @@ class QuestionAskerNode:
             }
         ]
     
-    # ⚠️ EDIT HERE: Main question asking logic
+    
     def ask_question(self, state: State, user_response: str = None) -> Dict[str, Any]:
-        """Ask the next question or process user response"""
+        
         
         # If we have a user response, update the profile
         if user_response and state.current_question:
@@ -129,9 +129,9 @@ class QuestionAskerNode:
                 "current_question": None
             }
     
-    # ⚠️ EDIT HERE: Bulk profile submission
+    
     def submit_complete_profile(self, state: State, complete_profile: Dict[str, Any]) -> Dict[str, Any]:
-        """Submit a complete user profile in one call"""
+       # Submit a complete user profile in one call
         try:
             # Validate that all required fields are present
             required_fields = [
@@ -176,39 +176,37 @@ class QuestionAskerNode:
             }
     
     def get_next_question(self, state: State) -> Dict[str, Any]:
-        """Get the next unanswered question"""
+        # Get the next unanswered question
         for question_data in self.questions:
             if state.user_profile[question_data['field']] is None:
                 return question_data
         return None
     
-    # ⚠️ EDIT HERE: Contextual question generation
     def _generate_contextual_question(self, question_data: Dict[str, Any], state: State) -> str:
-        """Generate a contextual question based on previous answers"""
+        # Generate a contextual question based on previous answers
         
-        # Use the exact structured question instead of generating conversational ones
-        # This ensures consistent field mapping in the frontend
+       
         return question_data['question']
 
 class FinalAnalysisNode:
-    """Node responsible for final analysis and recommendations"""
+    # Node responsible for final analysis and recommendations
     
     def __init__(self, tools: Dict[str, Any]):
         # LLM Configuration
         self.llm = ChatOpenAI(
             model="gpt-3.5-turbo",  # Changed from gpt-4 to reduce token usage
-            temperature=0.3,  # ⚠️ EDIT HERE for consistency
+            temperature=0.3,  
             api_key=os.getenv("OPENAI_API_KEY")
         )
         self.tools = tools
     
-    # ⚠️ EDIT HERE: Main analysis and recommendation logic
+   
     def analyze_and_recommend(self, state: State) -> Dict[str, Any]:
         """Perform final analysis using parallel sub-agents and final decision maker"""
         
         try:
-            logger.info("🚀 STARTING PARALLEL ANALYSIS...")
-            print(f"STARTING PARALLEL ANALYSIS...")
+            logger.info("Starting Analysis...")
+            print("Starting Analysis")
             
             # Get sub-agents
             sub_agent_0 = self.tools.get("sub_agent_0")
@@ -219,16 +217,16 @@ class FinalAnalysisNode:
             logger.info("🔧 Retrieved tools from toolset")
             
             if not all([sub_agent_0, sub_agent_1, sub_agent_2, final_agent]):
-                logger.error("❌ Required tools not available")
+                logger.error(" Required tools not available")
                 raise Exception("Required tools not available")
             
             # Run sub-agents in parallel with LLM analysis
             logger.info("🔄 Running sub-agents in parallel with LLM analysis...")
             print(f"Running sub-agents in parallel with LLM analysis...")
             
-            # Use ThreadPoolExecutor for parallel execution
+            # Use ThreadPoolExecutor for parallel execution & Using Logging to see on our Backend Server when Hosted
             with ThreadPoolExecutor(max_workers=3) as executor:
-                logger.info("📦 Submitting sub-agents to thread pool...")
+                logger.info(" Submitting sub-agents to thread pool...")
                 # Submit all three sub-agents to run in parallel
                 future_0 = executor.submit(self._run_sub_agent_llm, sub_agent_0, state.user_profile)
                 future_1 = executor.submit(self._run_sub_agent_llm, sub_agent_1, state.user_profile)
@@ -240,12 +238,10 @@ class FinalAnalysisNode:
                 result_1 = future_1.result()
                 result_2 = future_2.result()
             
-            logger.info(f"✅ Sub-agent 0 selected {len(result_0.get('selected_cards', []))} cards")
-            logger.info(f"✅ Sub-agent 1 selected {len(result_1.get('selected_cards', []))} cards")
-            logger.info(f"✅ Sub-agent 2 selected {len(result_2.get('selected_cards', []))} cards")
-            print(f"Sub-agent 0 selected {len(result_0.get('selected_cards', []))} cards")
-            print(f"Sub-agent 1 selected {len(result_1.get('selected_cards', []))} cards")
-            print(f"Sub-agent 2 selected {len(result_2.get('selected_cards', []))} cards")
+            logger.info(f" Sub-agent 0 selected {len(result_0.get('selected_cards', []))} cards")
+            logger.info(f"Sub-agent 1 selected {len(result_1.get('selected_cards', []))} cards")
+            logger.info(f" Sub-agent 2 selected {len(result_2.get('selected_cards', []))} cards")
+           
             
             # Combine selected cards from all three sub-agents
             combined_cards = []
@@ -253,21 +249,21 @@ class FinalAnalysisNode:
             combined_cards.extend(result_1.get("selected_cards", []))
             combined_cards.extend(result_2.get("selected_cards", []))
             
-            logger.info(f"📊 Combined {len(combined_cards)} selected cards from all three sub-agents")
-            print(f"Combined {len(combined_cards)} selected cards from all three sub-agents")
+            logger.info(f" Combining selected cards from all three sub-agents")
+           
             
             # Use final agent to select best 3 cards from the combined selection
-            logger.info("🎯 Starting final agent analysis...")
+            logger.info(" Starting final agent analysis")
             
             # Use the combined cards from sub-agents instead of loading all cards again
             final_cards = combined_cards
             user_profile = state.user_profile
             selection_instructions = "Select the BEST 3 cards from the pre-filtered selection."
             
-            logger.info(f"📋 Final agent analyzing {len(final_cards)} pre-filtered cards from sub-agents")
+            logger.info(" Final agent analyzing pre-filtered cards from sub-agents")
             
             # Generate final recommendation using LLM analysis
-            logger.info("🤖 Starting final LLM recommendation generation...")
+            logger.info("Starting final recommendation generation")
             recommendation = self._generate_llm_recommendation(
                 user_profile, 
                 final_cards,
@@ -285,7 +281,7 @@ class FinalAnalysisNode:
                 }
             }
             
-            logger.info("✅ Analysis completed successfully")
+            logger.info(" Analysis completed successfully")
             
             state.conversation_history.append({
                 'role': 'assistant',
@@ -299,7 +295,7 @@ class FinalAnalysisNode:
             }
             
         except Exception as e:
-            logger.error(f"❌ Error in analyze_and_recommend: {e}")
+            logger.error(f" Error in analyze_and_recommend: {e}")
             error_response = f"I apologize, but I encountered an error while analyzing your profile: {str(e)}. Please try again."
             state.conversation_history.append({
                 'role': 'assistant',
@@ -315,26 +311,22 @@ class FinalAnalysisNode:
     def _run_sub_agent_llm(self, sub_agent, user_profile: Dict[str, Any]) -> Dict[str, Any]:
         """Run LLM analysis for a sub-agent to reduce card selection by 50%"""
         try:
-            logger.info(f"🤖 Starting sub-agent LLM analysis...")
-            print(f" DEBUG: Starting sub-agent LLM analysis...")
-            
+            logger.info(f" Starting sub-agent LLM analysis")
+          
             # Get sub-agent data
             sub_agent_data = sub_agent._run(user_profile)
             cards_to_analyze = sub_agent_data.get("cards", [])
             analysis_prompt = sub_agent_data.get("analysis_prompt", "")
             agent_id = sub_agent_data.get("agent_id", "unknown")
             
-            logger.info(f"📊 {agent_id.upper()} analyzing {len(cards_to_analyze)} cards")
-            print(f" DEBUG: {agent_id.upper()} - Analyzing {len(cards_to_analyze)} cards")
-            print(f" DEBUG: {agent_id.upper()} - First 3 cards to analyze:")
+         
+           
             for i, card in enumerate(cards_to_analyze[:3]):
                 print(f"  {i+1}. {card.get('name', 'Unknown')}")
             
-            print(f"🤖 {agent_id.upper()} LLM ANALYSIS STARTING...")
             
             # Check if user is a student
-            is_student = user_profile.get('credit_situation', '').lower().find('student') != -1
-            print(f" DEBUG: {agent_id.upper()} - User is student: {is_student}")
+            is_student = user_profile.get('credit_situation', '').lower().find('student') != -
             
             # Create student-specific instructions for sub-agents
             student_instruction = ""
@@ -362,8 +354,7 @@ Example format:
   {{"name": "Another Card", "reasoning": "Brief explanation"}}
 ]"""
 
-            logger.info(f"📝 {agent_id.upper()} created LLM prompt ({len(prompt)} characters)")
-            print(f" DEBUG: {agent_id.upper()} - Created LLM prompt with {len(prompt)} characters")
+          
 
             # Call LLM for sub-agent analysis
             messages = [
@@ -371,12 +362,11 @@ Example format:
                 HumanMessage(content=prompt)
             ]
             
-            logger.info(f"🔄 {agent_id.upper()} calling LLM...")
-            print(f" DEBUG: {agent_id.upper()} - Calling LLM...")
+         
             response = self.llm.invoke(messages)
-            logger.info(f"✅ {agent_id.upper()} LLM response received ({len(response.content)} characters)")
-            print(f" DEBUG: {agent_id.upper()} - LLM response received ({len(response.content)} characters)")
-            print(f" DEBUG: {agent_id.upper()} - LLM response preview: {response.content[:200]}...")
+            logger.info(f" response received ({len(response.content)} characters)")
+            print(f"  LLM response received ({len(response.content)} characters)")
+            print(f" response preview: {response.content[:200]}...")
             
             # Parse the response to extract selected cards
             try:
@@ -403,11 +393,9 @@ Example format:
                     if found_card:
                         selected_cards.append(found_card)
                     else:
-                        print(f" DEBUG: {agent_id.upper()} - WARNING: No match found for LLM card: '{card_name}'")
+                        print(f" DEBUG: {agent_id.upper()} - No match found for LLM card: '{card_name}'")
                 
-                logger.info(f"✅ {agent_id.upper()} selected {len(selected_cards)} cards from LLM response")
-                print(f" {agent_id.upper()} selected {len(selected_cards)} cards")
-                print(f" DEBUG: {agent_id.upper()} - Final selected cards:")
+  
                 for i, card in enumerate(selected_cards):
                     print(f"  {i+1}. {card.get('name', 'Unknown')}")
                 
@@ -419,9 +407,7 @@ Example format:
                 }
                 
             except json.JSONDecodeError:
-                logger.warning(f"❌ {agent_id.upper()} LLM response parsing failed, using fallback")
-                print(f" {agent_id.upper()} LLM response parsing failed, using fallback")
-                print(f" DEBUG: {agent_id.upper()} - Raw LLM response: {response.content}")
+            
                 # Fallback: return first 50% of cards
                 fallback_cards = cards_to_analyze[:len(cards_to_analyze)//2]
                 return {
@@ -453,14 +439,12 @@ Example format:
         
         # Create hybrid profile summary
         hybrid_profile = self._create_hybrid_profile(user_profile)
-        logger.info("📋 Created hybrid profile summary")
-        print(f" DEBUG: Created hybrid profile: {hybrid_profile}")
+        logger.info(" Created hybrid profile summary")
+       
         
         # Prepare comprehensive card data for LLM analysis
         card_data_summary = []
-        print(f" DEBUG: Preparing card data for LLM...")
-        print(f" DEBUG: First card structure: {all_cards[0] if all_cards else 'No cards'}")
-        
+      
         for i, card in enumerate(all_cards):
             # FIX: Use the correct field names that match the database
             card_summary = {
@@ -539,37 +523,29 @@ Return the response in this exact format:
 3. **Card Name**
    [Same format as above]"""
 
-        print(f" DEBUG: Created final LLM prompt with {len(prompt)} characters")
-        print(f" DEBUG: Prompt preview: {prompt[:500]}...")
 
         try:
             logger.info(f"🤖 Attempting LLM analysis with {len(all_cards)} cards...")
-            print(f"🤖 Attempting LLM analysis with {len(all_cards)} cards...")
+            print(f" Attempting LLM analysis with {len(all_cards)} cards...")
             messages = [
                 SystemMessage(content="You are an expert credit card advisor with deep knowledge of all available cards. Your job is to analyze the complete card database and select the best 3 cards for each user based on their specific profile. Always return the exact card details from the database."),
                 HumanMessage(content=prompt)
             ]
             
-            logger.info("🔄 Calling final LLM...")
-            print(f" DEBUG: Calling final LLM...")
+           
             response = self.llm.invoke(messages)
-            logger.info(f"✅ LLM analysis successful! Response length: {len(response.content)} characters")
-            print(f" LLM analysis successful!")
-            print(f" DEBUG: LLM response length: {len(response.content)} characters")
-            print(f" DEBUG: LLM response preview: {response.content[:500]}...")
+          
             
             # Return structured response
             structured_cards = self._extract_structured_cards(response.content, all_cards)
-            print(f" DEBUG: Extracted {len(structured_cards)} structured cards")
+       
             
             return {
                 "text_response": response.content,
                 "structured_cards": structured_cards
             }
         except Exception as e:
-            logger.error(f"❌ LLM analysis failed: {e}")
-            print(f" LLM analysis failed: {e}")
-            print(f" Falling back to basic recommendation...")
+    
             # Fallback recommendation
             fallback_text = self._generate_fallback_recommendation(user_profile, all_cards[:3] if all_cards else [])
             return {
@@ -581,10 +557,7 @@ Return the response in this exact format:
         """Extract structured card data from LLM response"""
         structured_cards = []
         
-        print(f" DEBUG: Starting structured card extraction...")
-        print(f" DEBUG: Response text length: {len(response_text)} characters")
-        print(f" DEBUG: Available cards in database: {len(all_cards)}")
-        
+    
         # Debug: Log all available card names
         available_card_names = []
         for card in all_cards:
@@ -593,7 +566,7 @@ Return the response in this exact format:
             available_card_names.append(card_name)
         
         print(f" DEBUG: Available card names in database:")
-        for i, name in enumerate(available_card_names[:10]):  # Show first 10
+        for i, name in enumerate(available_card_names[:10]):  
             print(f"  {i+1}. {name}")
         
         # Split by numbered items
@@ -667,7 +640,7 @@ Return the response in this exact format:
             return reasoning_match.group(1).strip()
         return ""
     
-    # ⚠️ EDIT HERE: Profile summary creation
+    #  Profile summary creation
     def _create_hybrid_profile(self, user_profile: Dict[str, Any]) -> str:
         """Create a hybrid profile summary with detailed questionnaire responses"""
         parts = []
@@ -711,7 +684,7 @@ Return the response in this exact format:
     
 
     
-    # ⚠️ EDIT HERE: Fallback recommendation
+    # Fallback recommendation
     def _generate_fallback_recommendation(self, user_profile: Dict[str, Any], top_cards: List[Dict[str, Any]]) -> str:
         """Generate a fallback recommendation if LLM fails"""
         if not top_cards:
